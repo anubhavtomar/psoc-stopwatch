@@ -26,6 +26,7 @@ stateTimerMinutes: equ 0x24
 stateTimerHour: equ 0x25
 stateTimerAccuracy: equ 0x26
 SWFlag: equ 0x27
+currentState: equ 0x28
 
 _dwElapsedTime::  
 	dwElapsedTime::    BLK    4
@@ -53,11 +54,12 @@ _main:
 	mov [accuracy] , 0x01
 	mov [accuracyItr] , 0x00
 	mov [SWFlag] , 0x00
+	mov [currentState] , 0x00
 	
 _check:
 	and F , clearFlagMsk
 	cmp [stateTimerFlag] , 0x01
-	jz _stopTimer
+	jz _checkLongPress
 	
 _poll:
 	mov a , REG[PRT1DR]
@@ -73,32 +75,35 @@ _poll:
 	mov [stateTimerFlag] , 0x01
 	jmp _poll
 
-_stopTimer: 
+_stopStateTimer: 
 	call stateTimer_Stop
 	call stateTimer_DisableInt
-	mov A , 0x00
-	push A
-	mov A , 0x01
-	push A
-	mov A , 0x86
-	push A
-	mov A , 0x9F
-	push A
-	lcall stateTimer_WritePeriod
 	mov [stateTimerFlag] , 0x00
+	ret
+	
+_checkLongPress:
+	call _stopStateTimer
 	cmp [stateTimerSeconds] , 0x01
-	jnc _checkSWState
+	jnc _goToNextState
+	jmp _checkShortPressState
+	
+_checkShortPressState:
+	call _clearStateTimerVar
+	cmp [currentState] , 0x01
+	jz _goToNextAccuracy
+	cmp [currentState] , 0x02
+	jz _checkSWState
+	cmp [currentState] , 0x03
+	jz _checkSWState
 	jmp _check
 	
 _checkSWState:
-	mov [stateTimerMilisec] , 0x00
-	mov [stateTimerSeconds] , 0x00
-	mov [stateTimerMinutes] , 0x00
-	mov [stateTimerHour] ,0x00
 	cmp [SWFlag] , 0x01
 	jz _SWstop
-	jmp _SWstart
-
+	cmp [currentState] , 0x03
+	jz _SWstart
+	jmp _check
+	
 _SWstart:
 	call SW_EnableInt
 	call SW_Start
@@ -108,22 +113,161 @@ _SWstart:
 _SWstop:
 	call SW_Stop
 	call SW_DisableInt
+	call _clearSWVar
+	mov [SWFlag] , 0x00
+	jmp _check
+	
+_clearStateTimerVar:
+   	mov A , 0x00
+   	push A
+   	mov A , 0x00
+   	push A
+   	mov A , 0xC3
+   	push A
+   	mov A , 0x4F
+   	push A
+   	lcall stateTimer_WritePeriod
+	mov [stateTimerMilisec] , 0x00
+	mov [stateTimerSeconds] , 0x00
+	mov [stateTimerMinutes] , 0x00
+	mov [stateTimerHour] ,0x00
+	ret
+
+_clearSWVar:
 	mov A , 0x00
-	push A
-	mov A , 0x01
-	push A
-	mov A , 0x86
-	push A
-	mov A , 0x9F
-	push A
-	lcall SW_WritePeriod
+   	push A
+   	mov A , 0x01
+   	push A
+   	mov A , 0x86
+   	push A
+   	mov A , 0x9F
+   	push A
+   	lcall SW_WritePeriod
 	mov [milisec] , 0x00
 	mov [seconds] , 0x00
 	mov [minutes] , 0x00
 	mov [hour] ,0x00
-	mov [SWFlag] , 0x00
+	ret
+	
+_delayDisplaySWTime:
+	call stateTimer_EnableInt
+	call stateTimer_Start
+	mov [stateTimerFlag] , 0x01
+_inter:
+	cmp [stateTimerSeconds] , 0x05
+	jc _inter
+	call _printSWInit
 	jmp _check
 	
+_printSWInit:
+	mov    A,00
+	mov    X,00
+   	call   LCD_Position
+   	mov    A,[hour]
+   	call   LCD_PrHexByte   
+	
+	mov    A,00
+	mov    X,02
+   	call   LCD_Position
+	mov    A,>COLON1
+   	mov    X,<COLON1
+   	call   LCD_PrCString
+	
+	mov    A,00
+	mov    X,03
+   	call   LCD_Position
+   	mov    A,[minutes]
+   	call   LCD_PrHexByte   
+	
+	mov    A,00
+	mov    X,05
+   	call   LCD_Position
+	mov    A,>COLON1
+   	mov    X,<COLON1
+   	call   LCD_PrCString   
+	
+	mov    A,00
+	mov    X,06
+   	call   LCD_Position
+   	mov    A,[seconds]
+   	call   LCD_PrHexByte   
+	
+	mov    A,00
+	mov    X,10
+   	call   LCD_Position
+	mov    A,>COLON1
+   	mov    X,<COLON1
+   	call   LCD_PrCString   
+	
+	mov    A,00
+	mov    X,11
+   	call   LCD_Position
+	mov    A,[milisec]
+   	call   LCD_PrHexByte  
+	ret
+	
+_goToNextState:
+	call _clearStateTimerVar
+	and F , clearFlagMsk
+	cmp [currentState] , 0x00
+	jz _setSensitivity
+	and F , clearFlagMsk
+	cmp [currentState] , 0x01
+	jz _setAccuracy
+	and F , clearFlagMsk
+	cmp [currentState] , 0x02
+	jz _soundSW
+	and F , clearFlagMsk
+	cmp [currentState] , 0x03
+	jz _pushBtnSW
+	jnc _displayMemory
+	
+_setSensitivity:
+	mov    A,00
+	mov    X,00
+   	call   LCD_Position
+	mov    A,>Microphone
+   	mov    X,<Microphone
+   	call   LCD_PrCString  
+	jmp _check
+	
+_setAccuracy:
+	mov    A,00
+	mov    X,00
+   	call   LCD_Position
+	mov    A,>Accuracy
+   	mov    X,<Accuracy
+   	call   LCD_PrCString  
+	mov [accuracyItr] , 0x00
+	jmp _check
+	
+_soundSW:
+	mov    A,00
+	mov    X,00
+   	call   LCD_Position
+	mov    A,>Sound
+   	mov    X,<Sound
+   	call   LCD_PrCString  
+	jmp _check
+	
+_pushBtnSW:
+	mov    A,00
+	mov    X,00
+   	call   LCD_Position
+	mov    A,>PushBtn
+   	mov    X,<PushBtn
+   	call   LCD_PrCString  
+	jmp _check
+	
+_displayMemory:
+	mov    A,00
+	mov    X,00
+   	call   LCD_Position
+	mov    A,>Memory
+   	mov    X,<Memory
+   	call   LCD_PrCString  
+	jmp _check
+
 _printHigh: 
 	mov    A,00           ; Set cursor position at row = 0
 	mov    X,02           ; col = 5
@@ -152,6 +296,25 @@ _printLow:
 	mov [stateTimerAccuracy] , 0x05
 	jmp _check
 	
+_goToNextAccuracy:
+	cmp [accuracyItr] , 0x00
+	jz _accuracyState1
+	cmp [accuracyItr] , 0x05
+	jz _accuracyState2
+	jmp _accuracyState3
+	
+_accuracyState1:
+	mov [accuracyItr] , 0x05
+	jmp _check
+
+_accuracyState2:
+	mov [accuracyItr] , 0x01
+	jmp _check
+	
+_accuracyState3:
+	mov [accuracyItr] , 0x00
+	jmp _check
+
 .LITERAL
 	highStr:
 		ds  "HIGH"
@@ -162,6 +325,42 @@ _printLow:
 	lowStr:
 		ds  "LOW"
 		db  00h                   ; String should always be null terminated		
+.ENDLITERAL
+
+.LITERAL
+	Microphone:
+		ds  "Microphone"
+		db  00h
+.ENDLITERAL
+
+.LITERAL
+	Accuracy:
+		ds  "Accuracy Mode"
+		db  00h
+.ENDLITERAL
+
+.LITERAL
+	Sound:
+		ds  "Sound"
+		db  00h
+.ENDLITERAL
+
+.LITERAL
+	PushBtn:
+		ds  "Push Button"
+		db  00h
+.ENDLITERAL
+
+.LITERAL
+	Memory:
+		ds  "Memory"
+		db  00h
+.ENDLITERAL
+
+.LITERAL
+	COLON1:
+		ds  ":"
+		db  00h
 .ENDLITERAL
 
 .terminate:

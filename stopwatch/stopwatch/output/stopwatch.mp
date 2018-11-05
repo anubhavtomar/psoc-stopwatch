@@ -1,6 +1,6 @@
 Project:      output/stopwatch
 Build Number: 0
-Date:         Sun Nov 04 20:01:23 2018
+Date:         Sun Nov 04 23:44:33 2018
 Compiler:     ICCM8C
 Version:      7.05.00
 
@@ -128,18 +128,18 @@ Area                               Addr   Size   Decimal Bytes (Attributes)
 
 Area                               Addr   Size   Decimal Bytes (Attributes)
 --------------------------------   ----   ----   ------- ----- ------------
-                            text   0886   00F3 =    243. bytes (rel,con,rom,code)
+                            text   0886   022A =    554. bytes (rel,con,rom,code)
 
        Addr  Global Symbol
       -----  --------------------------------
-       0886  __text_start
        0886  dwElapsedTime
+       0886  __text_start
        0886  _dwElapsedTime
        088A  _main
-       0978  PSoC_GPIO_ISR
-       0979  __xidata_start
-       0979  __text_end
-       097B  __xidata_end
+       0AAF  PSoC_GPIO_ISR
+       0AB0  __text_end
+       0AB0  __xidata_start
+       0AB2  __xidata_end
 
 Area                               Start  End    Decimal Bytes (Attributes)
 --------------------------------   ----   ----   ------- ----- ------------
