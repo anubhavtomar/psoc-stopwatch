@@ -1,0 +1,32 @@
+# DO NOT DELETE
+./obj/boot.o : \
+   C:/Users/Shahzad/Desktop/HARD-S~1/PSOCDE~1/5.4/Common/CYPRES~1/tools/include/CY8C29~1/m8c.inc\
+   C:/Users/Shahzad/Desktop/HARD-S~1/PSOCDE~1/5.4/Common/CYPRES~1/tools/include/CY8C29~1/m8ssc.inc\
+   C:\Users\Shahzad\Desktop\HARD-S~1\PSOC-S~1\STOPWA~1\STOPWA~1\lib\GLOBAL~1.INC\
+   C:\Users\Shahzad\Desktop\HARD-S~1\PSOC-S~1\STOPWA~1\STOPWA~1\memory.inc
+./obj/main.o :  ./lib/LCD.inc ./lib/PSoCAPI.inc ./lib/PSOCGP~1.INC\
+   ./lib/SW.inc ./lib/STATET~1.INC\
+   C:/Users/Shahzad/Desktop/HARD-S~1/PSOCDE~1/5.4/Common/CYPRES~1/tools/include/CY8C29~1/m8c.inc\
+   C:\Users\Shahzad\Desktop\HARD-S~1\PSOC-S~1\STOPWA~1\STOPWA~1\memory.inc
+./lib/obj/lcd.o :  ./lib/LCD.inc\
+   C:/Users/Shahzad/Desktop/HARD-S~1/PSOCDE~1/5.4/Common/CYPRES~1/tools/include/CY8C29~1/m8c.inc\
+   C:\Users\Shahzad\Desktop\HARD-S~1\PSOC-S~1\STOPWA~1\STOPWA~1\memory.inc
+./lib/obj/psocconfig.o :  ./lib/GLOBAL~1.INC\
+   C:/Users/Shahzad/Desktop/HARD-S~1/PSOCDE~1/5.4/Common/CYPRES~1/tools/include/CY8C29~1/m8c.inc\
+   C:\Users\Shahzad\Desktop\HARD-S~1\PSOC-S~1\STOPWA~1\STOPWA~1\memory.inc
+./lib/obj/psocconfigtbl.o : \
+   C:/Users/Shahzad/Desktop/HARD-S~1/PSOCDE~1/5.4/Common/CYPRES~1/tools/include/CY8C29~1/m8c.inc
+./lib/obj/psocgpioint.o :  ./lib/PSOCGP~1.INC\
+   C:/Users/Shahzad/Desktop/HARD-S~1/PSOCDE~1/5.4/Common/CYPRES~1/tools/include/CY8C29~1/m8c.inc
+./lib/obj/statetimer.o :  ./lib/STATET~1.INC\
+   C:/Users/Shahzad/Desktop/HARD-S~1/PSOCDE~1/5.4/Common/CYPRES~1/tools/include/CY8C29~1/m8c.inc\
+   C:\Users\Shahzad\Desktop\HARD-S~1\PSOC-S~1\STOPWA~1\STOPWA~1\memory.inc
+./lib/obj/statetimerint.o :  ./lib/STATET~1.INC\
+   C:/Users/Shahzad/Desktop/HARD-S~1/PSOCDE~1/5.4/Common/CYPRES~1/tools/include/CY8C29~1/m8c.inc\
+   C:\Users\Shahzad\Desktop\HARD-S~1\PSOC-S~1\STOPWA~1\STOPWA~1\memory.inc
+./lib/obj/sw.o :  ./lib/SW.inc\
+   C:/Users/Shahzad/Desktop/HARD-S~1/PSOCDE~1/5.4/Common/CYPRES~1/tools/include/CY8C29~1/m8c.inc\
+   C:\Users\Shahzad\Desktop\HARD-S~1\PSOC-S~1\STOPWA~1\STOPWA~1\memory.inc
+./lib/obj/swint.o :  ./lib/SW.inc\
+   C:/Users/Shahzad/Desktop/HARD-S~1/PSOCDE~1/5.4/Common/CYPRES~1/tools/include/CY8C29~1/m8c.inc\
+   C:\Users\Shahzad\Desktop\HARD-S~1\PSOC-S~1\STOPWA~1\STOPWA~1\memory.inc

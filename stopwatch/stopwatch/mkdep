@@ -1,0 +1,1 @@
+-a -f project.dep -p./std/obj/ -o.o -- -IC:/Users/Shahzad/Desktop/HARD-S~1/PSOCDE~1/5.4/Common/CYPRES~1/tools/include -I./lib -I./std -I. -IC:/Users/Shahzad/Desktop/HARD-S~1/PSOCDE~1/5.4/Common/CYPRES~1/tools/include/CY8C29~1  -- 

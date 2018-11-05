@@ -1,0 +1,6 @@
+-F0x30 -g -blit:0x1a0.0x7fff 
+ -bdata:0.0x6ff -rwh:SSCParmBlk:0x00F7.0x00FF -BInterruptRAM:0 -Bvirtual_registers  
+ -Bstopwatch_RAM 
+ -o"output/stopwatch" 
+obj/main.o 	
+ ./lib/libPSoc.a -LC:/Users/Shahzad/Desktop/HARD-S~1/PSOCDE~1/5.4/Common/CYPRES~1/tools/lib/LMM/eightpages C:/Users/Shahzad/Desktop/HARD-S~1/PSOCDE~1/5.4/Common/CYPRES~1/tools/lib/CY8C29000/cms.a C:/Users/Shahzad/Desktop/HARD-S~1/PSOCDE~1/5.4/Common/CYPRES~1/tools/lib/LMM/UASW/MAC/arith.a  
