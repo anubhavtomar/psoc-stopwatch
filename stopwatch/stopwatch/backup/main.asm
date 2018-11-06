@@ -54,7 +54,7 @@ _main:
 	mov [accuracy] , 0x01
 	mov [accuracyItr] , 0x00
 	mov [SWFlag] , 0x00
-	mov [currentState] , 0x04
+	mov [currentState] , 0x00
 	
 _check:
 	and F , clearFlagMsk
@@ -76,29 +76,13 @@ _poll:
 	jmp _poll
 	
 _checkLongPress:
-	;call _stopStateTimer
-		call stateTimer_Stop
-		call stateTimer_DisableInt
-		mov [stateTimerFlag] , 0x00
+	call _stopStateTimer
 	cmp [stateTimerSeconds] , 0x01
 	jnc _goToNextState
 	jmp _checkShortPressState
 	
 _checkShortPressState:
-	;call _clearStateTimerVar
-		mov A , 0x00
-	   	push A
-	   	mov A , 0x00
-	   	push A
-	   	mov A , 0xC3
-	   	push A
-	   	mov A , 0x4F
-	   	push A
-	   	lcall stateTimer_WritePeriod
-		mov [stateTimerMilisec] , 0x00
-		mov [stateTimerSeconds] , 0x00
-		mov [stateTimerMinutes] , 0x00
-		mov [stateTimerHour] ,0x00
+	call _clearStateTimerVar
 	cmp [currentState] , 0x01
 	jz _goToNextAccuracy
 	cmp [currentState] , 0x02
@@ -116,7 +100,6 @@ _checkSWState:
 	
 _SWstart:
 	call SW_EnableInt
-	call LCD_Start
 	call SW_Start
 	mov [SWFlag] , 0x01
 	jmp _check
@@ -124,21 +107,7 @@ _SWstart:
 _SWstop:
 	call SW_Stop
 	call SW_DisableInt
-	;call _clearSWVar
-		mov A , 0x00
-	   	push A
-	   	mov A , 0x01
-	   	push A
-	   	mov A , 0x86
-	   	push A
-	   	mov A , 0x9F
-	   	push A
-	   	lcall SW_WritePeriod
-		mov [milisec] , 0x00
-		mov [seconds] , 0x00
-		mov [minutes] , 0x00
-		mov [hour] ,0x00
-	jmp _delayDisplaySWTime
+	call _clearSWVar
 	mov [SWFlag] , 0x00
 	jmp _check
 	
@@ -149,72 +118,19 @@ _delayDisplaySWTime:
 _inter:
 	cmp [stateTimerSeconds] , 0x05
 	jc _inter
-	;call _printSWInit
-		call LCD_Start
-		mov    A,00
-		mov    X,00
-	   	call   LCD_Position
-	   	mov    A,[hour]
-	   	call   LCD_PrHexByte   
-		
-		mov    A,00
+	call _printSWInit
+	jmp _check
+	
+
+	
+_goToNextState:
+	call _clearStateTimerVar
+	mov    A,00
 		mov    X,02
 	   	call   LCD_Position
-		mov    A,>COLON1
-	   	mov    X,<COLON1
+		mov    A,>highStr
+	   	mov    X,<highStr
 	   	call   LCD_PrCString
-		
-		mov    A,00
-		mov    X,03
-	   	call   LCD_Position
-	   	mov    A,[minutes]
-	   	call   LCD_PrHexByte   
-		
-		mov    A,00
-		mov    X,05
-	   	call   LCD_Position
-		mov    A,>COLON1
-	   	mov    X,<COLON1
-	   	call   LCD_PrCString   
-		
-		mov    A,00
-		mov    X,06
-	   	call   LCD_Position
-	   	mov    A,[seconds]
-	   	call   LCD_PrHexByte   
-		
-		mov    A,00
-		mov    X,10
-	   	call   LCD_Position
-		mov    A,>COLON1
-	   	mov    X,<COLON1
-	   	call   LCD_PrCString   
-		
-		mov    A,00
-		mov    X,11
-	   	call   LCD_Position
-		mov    A,[milisec]
-	   	call   LCD_PrHexByte 
-	jmp _check
-
-_goToNextState:
-	;call _clearStateTimerVar
-		mov A , 0x00
-	   	push A
-	   	mov A , 0x00
-	   	push A
-	   	mov A , 0xC3
-	   	push A
-	   	mov A , 0x4F
-	   	push A
-	   	lcall stateTimer_WritePeriod
-		mov [stateTimerMilisec] , 0x00
-		mov [stateTimerSeconds] , 0x00
-		mov [stateTimerMinutes] , 0x00
-		mov [stateTimerHour] ,0x00
-	and F , clearFlagMsk
-	cmp [SWFlag] , 0x01
-	jz _check
 	and F , clearFlagMsk
 	cmp [currentState] , 0x04
 	jz _setSensitivity
@@ -231,7 +147,6 @@ _goToNextState:
 	
 _setSensitivity:
 	mov [currentState] , 0x00
-	call LCD_Start
 	mov    A,00
 	mov    X,00
    	call   LCD_Position
@@ -242,7 +157,6 @@ _setSensitivity:
 	
 _setAccuracy:
 	mov [currentState] , 0x01
-	call LCD_Start
 	mov    A,00
 	mov    X,00
    	call   LCD_Position
@@ -254,7 +168,6 @@ _setAccuracy:
 	
 _soundSW:
 	mov [currentState] , 0x02
-	call LCD_Start
 	mov    A,00
 	mov    X,00
    	call   LCD_Position
@@ -265,7 +178,6 @@ _soundSW:
 	
 _pushBtnSW:
 	mov [currentState] , 0x03
-	call LCD_Start
 	mov    A,00
 	mov    X,00
    	call   LCD_Position
@@ -276,7 +188,6 @@ _pushBtnSW:
 	
 _displayMemory:
 	mov [currentState] , 0x04
-	call LCD_Start
 	mov    A,00
 	mov    X,00
    	call   LCD_Position
@@ -382,3 +293,5 @@ _accuracyState3:
 
 .terminate:
     jmp .terminate
+	
+	ret

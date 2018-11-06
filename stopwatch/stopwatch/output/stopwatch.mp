@@ -1,6 +1,6 @@
 Project:      output/stopwatch
 Build Number: 0
-Date:         Sun Nov 04 23:44:33 2018
+Date:         Tue Nov 06 17:19:46 2018
 Compiler:     ICCM8C
 Version:      7.05.00
 
@@ -128,18 +128,22 @@ Area                               Addr   Size   Decimal Bytes (Attributes)
 
 Area                               Addr   Size   Decimal Bytes (Attributes)
 --------------------------------   ----   ----   ------- ----- ------------
-                            text   0886   022A =    554. bytes (rel,con,rom,code)
+                            text   0886   02F1 =    753. bytes (rel,con,rom,code)
 
        Addr  Global Symbol
       -----  --------------------------------
-       0886  dwElapsedTime
        0886  __text_start
-       0886  _dwElapsedTime
-       088A  _main
-       0AAF  PSoC_GPIO_ISR
-       0AB0  __text_end
-       0AB0  __xidata_start
-       0AB2  __xidata_end
+       0886  _clearStateTimerVar
+       08A2  _clearSWVar
+       08BE  _stopStateTimer
+       08C6  _printSWInit
+       091C  _dwElapsedTime
+       091C  dwElapsedTime
+       0920  _main
+       0B76  PSoC_GPIO_ISR
+       0B77  __text_end
+       0B77  __xidata_start
+       0B79  __xidata_end
 
 Area                               Start  End    Decimal Bytes (Attributes)
 --------------------------------   ----   ----   ------- ----- ------------
@@ -178,6 +182,7 @@ Area                               Addr   Size   Decimal Bytes (Attributes)
 Files Linked      [ module(s) ]
 
 ./obj/boot.o	[ boot.asm ]
+obj/lib.o	[ lib.asm ]
 obj/main.o	[ main.asm ]
 <library>	[ swint.asm, sw.asm, statetimerint.asm, statetimer.asm, psocgpioint.asm, psocconfigtbl.asm, psocconfig.asm ]
 [ lcd.asm, r1.asm, r0.asm ]
