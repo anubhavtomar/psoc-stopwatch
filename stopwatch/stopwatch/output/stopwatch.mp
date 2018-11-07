@@ -1,6 +1,6 @@
 Project:      output/stopwatch
 Build Number: 0
-Date:         Tue Nov 06 17:19:46 2018
+Date:         Wed Nov 07 00:48:23 2018
 Compiler:     ICCM8C
 Version:      7.05.00
 
@@ -39,111 +39,111 @@ Area                               Addr   Size   Decimal Bytes (Attributes)
 
 Area                               Addr   Size   Decimal Bytes (Attributes)
 --------------------------------   ----   ----   ------- ----- ------------
-                     UserModules   03E6   04A0 =   1184. bytes (rel,con,rom,code)
+                     UserModules   03E6   04A9 =   1193. bytes (rel,con,rom,code)
 
        Addr  Global Symbol
       -----  --------------------------------
        03E6  _SW_ISR
-       045B  SW_EnableInt
-       045B  _SW_EnableInt
-       045F  SW_DisableInt
-       045F  _SW_DisableInt
-       0463  SW_Start
-       0463  _SW_Start
-       0467  _SW_Stop
-       0467  SW_Stop
-       046B  _SW_WritePeriod
-       046B  SW_WritePeriod
-       0481  SW_WriteCompareValue
-       0481  _SW_WriteCompareValue
-       0497  SW_ReadCompareValue
-       0497  _SW_ReadCompareValue
-       04B0  SW_ReadTimerSaveCV
-       04B0  _SW_ReadTimerSaveCV
-       04B0  SW_ReadCounter
-       04B0  _SW_ReadCounter
-       04F9  _SW_CaptureCounter
-       04F9  SW_ReadTimer
-       04F9  _SW_ReadTimer
-       04F9  SW_CaptureCounter
-       0514  _stateTimer_ISR
-       053E  _stateTimer_EnableInt
-       053E  stateTimer_EnableInt
-       0542  _stateTimer_DisableInt
-       0542  stateTimer_DisableInt
-       0546  _stateTimer_Start
-       0546  stateTimer_Start
-       054A  stateTimer_Stop
-       054A  _stateTimer_Stop
-       054E  stateTimer_WritePeriod
-       054E  _stateTimer_WritePeriod
-       0564  stateTimer_WriteCompareValue
-       0564  _stateTimer_WriteCompareValue
-       057A  stateTimer_ReadCompareValue
-       057A  _stateTimer_ReadCompareValue
-       0593  stateTimer_ReadTimerSaveCV
-       0593  stateTimer_ReadCounter
-       0593  _stateTimer_ReadCounter
-       0593  _stateTimer_ReadTimerSaveCV
-       05DC  stateTimer_CaptureCounter
-       05DC  _stateTimer_CaptureCounter
-       05DC  stateTimer_ReadTimer
-       05DC  _stateTimer_ReadTimer
-       05F7  _LCD_PrCString
-       05F7  LCD_PrCString
-       0609  LCD_HEX_STR
-       0619  _LCD_PrHexByte
-       0619  LCD_PrHexByte
-       062C  _LCD_PrHexInt
-       062C  LCD_PrHexInt
-       0633  _LCD_PrString
-       0633  LCD_PrString
-       0645  _LCD_Write_Data
-       0645  _LCD_WriteData
-       0645  LCD_Write_Data
-       0645  LCD_WriteData
-       0659  _LCD_Control
-       0659  LCD_Control
-       0709  _LCD_Init
-       0709  LCD_Start
-       0709  _LCD_Start
-       0709  LCD_Init
-       0778  LCD_ROW_OFFSET
-       077C  LCD_Position
-       077C  _LCD_Position
-       078C  LCD_Delay50uTimes
-       078C  _LCD_Delay50uTimes
-       0792  LCD_Delay50u_Table
-       079A  _LCD_Delay50u
-       079A  LCD_Delay50u
-       07AE  _LCD_DrawBG
-       07DF  _LCD_DrawVBG
-       0813  LCD_InitVBG
-       0813  _LCD_InitVBG
-       0844  LCD_BG_TYPE1
-       084B  LCD_BG_TYPE2
-       0852  _LCD_InitBG
-       0852  LCD_InitBG
-       0886  __UserModules_end
+       0464  SW_EnableInt
+       0464  _SW_EnableInt
+       0468  SW_DisableInt
+       0468  _SW_DisableInt
+       046C  SW_Start
+       046C  _SW_Start
+       0470  _SW_Stop
+       0470  SW_Stop
+       0474  _SW_WritePeriod
+       0474  SW_WritePeriod
+       048A  SW_WriteCompareValue
+       048A  _SW_WriteCompareValue
+       04A0  SW_ReadCompareValue
+       04A0  _SW_ReadCompareValue
+       04B9  SW_ReadTimerSaveCV
+       04B9  _SW_ReadTimerSaveCV
+       04B9  SW_ReadCounter
+       04B9  _SW_ReadCounter
+       0502  _SW_CaptureCounter
+       0502  SW_ReadTimer
+       0502  _SW_ReadTimer
+       0502  SW_CaptureCounter
+       051D  _stateTimer_ISR
+       0547  _stateTimer_EnableInt
+       0547  stateTimer_EnableInt
+       054B  _stateTimer_DisableInt
+       054B  stateTimer_DisableInt
+       054F  _stateTimer_Start
+       054F  stateTimer_Start
+       0553  stateTimer_Stop
+       0553  _stateTimer_Stop
+       0557  stateTimer_WritePeriod
+       0557  _stateTimer_WritePeriod
+       056D  stateTimer_WriteCompareValue
+       056D  _stateTimer_WriteCompareValue
+       0583  stateTimer_ReadCompareValue
+       0583  _stateTimer_ReadCompareValue
+       059C  stateTimer_ReadTimerSaveCV
+       059C  stateTimer_ReadCounter
+       059C  _stateTimer_ReadCounter
+       059C  _stateTimer_ReadTimerSaveCV
+       05E5  stateTimer_CaptureCounter
+       05E5  _stateTimer_CaptureCounter
+       05E5  stateTimer_ReadTimer
+       05E5  _stateTimer_ReadTimer
+       0600  _LCD_PrCString
+       0600  LCD_PrCString
+       0612  LCD_HEX_STR
+       0622  _LCD_PrHexByte
+       0622  LCD_PrHexByte
+       0635  _LCD_PrHexInt
+       0635  LCD_PrHexInt
+       063C  _LCD_PrString
+       063C  LCD_PrString
+       064E  _LCD_Write_Data
+       064E  _LCD_WriteData
+       064E  LCD_Write_Data
+       064E  LCD_WriteData
+       0662  _LCD_Control
+       0662  LCD_Control
+       0712  _LCD_Init
+       0712  LCD_Start
+       0712  _LCD_Start
+       0712  LCD_Init
+       0781  LCD_ROW_OFFSET
+       0785  LCD_Position
+       0785  _LCD_Position
+       0795  LCD_Delay50uTimes
+       0795  _LCD_Delay50uTimes
+       079B  LCD_Delay50u_Table
+       07A3  _LCD_Delay50u
+       07A3  LCD_Delay50u
+       07B7  _LCD_DrawBG
+       07E8  _LCD_DrawVBG
+       081C  LCD_InitVBG
+       081C  _LCD_InitVBG
+       084D  LCD_BG_TYPE1
+       0854  LCD_BG_TYPE2
+       085B  _LCD_InitBG
+       085B  LCD_InitBG
+       088F  __UserModules_end
 
 Area                               Addr   Size   Decimal Bytes (Attributes)
 --------------------------------   ----   ----   ------- ----- ------------
-                            text   0886   02F1 =    753. bytes (rel,con,rom,code)
+                            text   088F   03B4 =    948. bytes (rel,con,rom,code)
 
        Addr  Global Symbol
       -----  --------------------------------
-       0886  __text_start
-       0886  _clearStateTimerVar
-       08A2  _clearSWVar
-       08BE  _stopStateTimer
-       08C6  _printSWInit
-       091C  _dwElapsedTime
-       091C  dwElapsedTime
-       0920  _main
-       0B76  PSoC_GPIO_ISR
-       0B77  __text_end
-       0B77  __xidata_start
-       0B79  __xidata_end
+       088F  __text_start
+       088F  _clearStateTimerVar
+       08AB  _clearSWVar
+       08C7  _stopStateTimer
+       08CF  _printSWInit
+       0925  _dwElapsedTime
+       0925  dwElapsedTime
+       0929  _main
+       0C42  PSoC_GPIO_ISR
+       0C43  __text_end
+       0C43  __xidata_start
+       0C45  __xidata_end
 
 Area                               Start  End    Decimal Bytes (Attributes)
 --------------------------------   ----   ----   ------- ----- ------------
