@@ -40,7 +40,7 @@ milisec: equ 0x10
 seconds: equ 0x11
 minutes: equ 0x12
 hour: equ 0x13
-accuracy: equ 0x20
+accuracyItr: equ 0x21
 
 ;------------------------
 ; Variable Allocation
@@ -75,11 +75,17 @@ _SW_ISR:
    ;---------------------------------------------------
    ; Insert your custom assembly code above this banner
    ;---------------------------------------------------
-   	mov A , [accuracy]
-	cmp A , 0x01
+   	mov A , [accuracyItr]
+	cmp A , 0x00
 	jz _count_sec
+	cmp A, 0x05
+	jz _millifive
 	inc [milisec]
-	cmp [milisec], 0x20
+	jmp _compareCornerMilis
+_millifive:
+	add [milisec],0x05
+_compareCornerMilis:
+	cmp [milisec], 0x0A
 	jc end_timeLoop ; jump if seconds < 60
 	mov [milisec], 0x00
 _count_sec:	

@@ -1,7 +1,3 @@
- 0000           ;-----------------------------------------------------------------------------
- 0000           ; Assembly main line
- 0000           ;-----------------------------------------------------------------------------
- 0000           
  00C0           FLAG_PGMODE_MASK:  equ 0C0h     ; Paging control for > 256 bytes of RAM
  0000           FLAG_PGMODE_0:     equ 00h       ; Direct to Page 0,      indexed to Page 0
  0040           FLAG_PGMODE_1:     equ 40h       ; Direct to Page 0,      indexed to STK_PP page
@@ -4012,9 +4008,6 @@
  0000              M8C_DisableIntMask stateTimer_INT_REG, stateTimer_INT_MASK
                 area text (ROM, REL)
                 
-                export _main
-                
-                ;Memory Address Refrence
  0000           PRT0DR: equ 0x00
  0004           PRT1DR: equ 0x04
  0010           milisec: equ 0x10
@@ -4032,462 +4025,113 @@
  0027           SWFlag: equ 0x27
  0028           currentState: equ 0x28
  0000           
- 0000           _dwElapsedTime::  
- 0000                   dwElapsedTime::    BLK    4
- 0004           
- 0004           
- 0004           ;Mask Initilization
- 0001           btnMSK: equ 0x01
- 00F9           clearFlagMsk: equ 249
- 0004           
- 0004           _main:
- 0004           
- 0004 7101          or    F, FLAG_GLOBAL_IE
- 0006                   ; Insert your main assembly code here.
- 0006 9000              call LCD_Start
- 0008 551000            mov [milisec] , 0x00
- 000B 551100            mov [seconds] , 0x00
- 000E 551200            mov [minutes] , 0x00
- 0011 551300            mov [hour] ,0x00
- 0014 552200            mov [stateTimerMilisec] , 0x00
- 0017 552300            mov [stateTimerSeconds] , 0x00
- 001A 552400            mov [stateTimerMinutes] , 0x00
- 001D 552500            mov [stateTimerHour] ,0x00
- 0020 552605            mov [stateTimerAccuracy] , 0x05
- 0023 551400            mov [stateTimerFlag] , 0x00
- 0026 552001            mov [accuracy] , 0x01
- 0029 552100            mov [accuracyItr] , 0x00
- 002C 552700            mov [SWFlag] , 0x00
- 002F 552804            mov [currentState] , 0x04
- 0032                   
- 0032           _check:
- 0032 70F9              and F , clearFlagMsk
- 0034 3C1401            cmp [stateTimerFlag] , 0x01
- 0037 A01B              jz _checkLongPress
- 0039                   
- 0039           _poll:
- 0039 5D04              mov a , REG[PRT1DR]
- 003B 2101              and a , btnMSK
- 003D 70F9              and F , clearFlagMsk
- 003F 3901              cmp a , 0x01
- 0041 BFF0              jnz _check
- 0043 70F9              and F , clearFlagMsk
- 0045 3C1401            cmp [stateTimerFlag] , 0x01
- 0048 AFF0              jz _poll
- 004A 9000              call stateTimer_EnableInt
- 004C 9000              call stateTimer_Start
- 004E 551401            mov [stateTimerFlag] , 0x01
- 0051 8FE7              jmp _poll
- 0053                   
- 0053           _checkLongPress:
- 0053           	;call _stopStateTimer
- 0053 9000                      call stateTimer_Stop
- 0055 9000                      call stateTimer_DisableInt
- 0057 551400                    mov [stateTimerFlag] , 0x00
- 005A 3C2301            cmp [stateTimerSeconds] , 0x01
- 005D D134              jnc _goToNextState
- 005F 8001              jmp _checkShortPressState
- 0061                   
- 0061           _checkShortPressState:
- 0061           	;call _clearStateTimerVar
- 0061 5000                      mov A , 0x00
- 0063 08                        push A
- 0064 5000                      mov A , 0x00
- 0066 08                        push A
- 0067 50C3                      mov A , 0xC3
- 0069 08                        push A
- 006A 504F                      mov A , 0x4F
- 006C 08                        push A
- 006D 7C0000                    lcall stateTimer_WritePeriod
- 0070 552200                    mov [stateTimerMilisec] , 0x00
- 0073 552300                    mov [stateTimerSeconds] , 0x00
- 0076 552400                    mov [stateTimerMinutes] , 0x00
- 0079 552500                    mov [stateTimerHour] ,0x00
- 007C 3C2801            cmp [currentState] , 0x01
- 007F A1F8              jz _goToNextAccuracy
- 0081 3C2802            cmp [currentState] , 0x02
- 0084 A008              jz _checkSWState
- 0086 3C2803            cmp [currentState] , 0x03
- 0089 A003              jz _checkSWState
- 008B 8FA6              jmp _check
- 008D                   
- 008D           _checkSWState:
- 008D 3C2701            cmp [SWFlag] , 0x01
- 0090 A013              jz _SWstop
- 0092 3C2803            cmp [currentState] , 0x03
- 0095 A003              jz _SWstart
- 0097 8F9A              jmp _check
- 0099                   
- 0099           _SWstart:
- 0099 9000              call SW_EnableInt
- 009B 9000              call LCD_Start
- 009D 9000              call SW_Start
- 009F 552701            mov [SWFlag] , 0x01
- 00A2 8F8F              jmp _check
- 00A4                   
- 00A4           _SWstop:
- 00A4 9000              call SW_Stop
- 00A6 9000              call SW_DisableInt
- 00A8                   ;call _clearSWVar
- 00A8 3C2100            cmp [accuracyItr],0x00
- 00AB A008              jz _compAccuracy1
- 00AD 3C2105            cmp [accuracyItr],0x05
- 00B0 A023              jz _compAccuracy5
- 00B2 8041              jmp _compAccuracy01
- 00B4                   
- 00B4           _compAccuracy1:
- 00B4 5000                      mov A , 0x00
- 00B6 08                        push A
- 00B7 5001                      mov A , 0x01
- 00B9 08                        push A
- 00BA 5086                      mov A , 0x86
- 00BC 08                        push A
- 00BD 509F                      mov A , 0x9F
- 00BF 08                        push A
- 00C0 7C0000                    lcall SW_WritePeriod
- 00C3 551000                    mov [milisec] , 0x00
- 00C6 551100                    mov [seconds] , 0x00
- 00C9 551200                    mov [minutes] , 0x00
- 00CC 551300                    mov [hour] ,0x00
- 00CF 552700                    mov [SWFlag] , 0x00
- 00D2 8041              jmp _delayDisplaySWTime
- 00D4                   
- 00D4           _compAccuracy5:
- 00D4 5000              mov A , 0x00
- 00D6 08                push A
- 00D7 5000              mov A , 0x00
- 00D9 08                push A
- 00DA 50C3              mov A , 0xC3
- 00DC 08                push A
- 00DD 504F              mov A , 0x4F
- 00DF 08                push A
- 00E0 7C0000                    lcall SW_WritePeriod
- 00E3 551000                    mov [milisec] , 0x00
- 00E6 551100                    mov [seconds] , 0x00
- 00E9 551200                    mov [minutes] , 0x00
- 00EC 551300                    mov [hour] ,0x00
- 00EF 552700                    mov [SWFlag] , 0x00
- 00F2 8021              jmp _delayDisplaySWTime
- 00F4           
- 00F4           _compAccuracy01:
- 00F4 5000              mov A , 0x00
- 00F6 08                push A
- 00F7 5000              mov A , 0x00
- 00F9 08                push A
- 00FA 5027              mov A , 0x27
- 00FC 08                push A
- 00FD 500F              mov A , 0x0F
- 00FF 08                push A
- 0100 7C0000                    lcall SW_WritePeriod
- 0103 551000                    mov [milisec] , 0x00
- 0106 551100                    mov [seconds] , 0x00
- 0109 551200                    mov [minutes] , 0x00
- 010C 551300                    mov [hour] ,0x00
- 010F 552700                    mov [SWFlag] , 0x00
- 0112 8001              jmp _delayDisplaySWTime
- 0114                   
- 0114                   
- 0114                   
- 0114           _delayDisplaySWTime:
- 0114 9000              call stateTimer_EnableInt
- 0116 9000              call stateTimer_Start
- 0118 551401            mov [stateTimerFlag] , 0x01
- 011B           _inter:
- 011B 3C2305            cmp [stateTimerSeconds] , 0x05
- 011E CFFC              jc _inter
- 0120 9000              call stateTimer_Stop
- 0122 9000              call stateTimer_DisableInt
- 0124 5000                      mov A , 0x00
- 0126 08                        push A
- 0127 5000                      mov A , 0x00
- 0129 08                        push A
- 012A 50C3                      mov A , 0xC3
- 012C 08                        push A
- 012D 504F                      mov A , 0x4F
- 012F 08                        push A
- 0130 7C0000                    lcall stateTimer_WritePeriod
- 0133 552200                    mov [stateTimerMilisec] , 0x00
- 0136 552300                    mov [stateTimerSeconds] , 0x00
- 0139 552400                    mov [stateTimerMinutes] , 0x00
- 013C 552500                    mov [stateTimerHour] ,0x00
- 013F 551400                    mov [stateTimerFlag] ,0x00
- 0142                   ;call _printSWInit
- 0142 9000                      call LCD_Start
- 0144 5000                      mov    A,00
- 0146 5700                      mov    X,00
- 0148 9000                      call   LCD_Position
- 014A 5113                      mov    A,[hour]
- 014C 9000                      call   LCD_PrHexByte   
- 014E                           
- 014E 5000                      mov    A,00
- 0150 5702                      mov    X,02
- 0152 9000                      call   LCD_Position
- 0154 5019                      mov    A,>COLON1
- 0156 5719                      mov    X,<COLON1
- 0158 9000                      call   LCD_PrCString
- 015A                           
- 015A 5000                      mov    A,00
- 015C 5703                      mov    X,03
- 015E 9000                      call   LCD_Position
- 0160 5112                      mov    A,[minutes]
- 0162 9000                      call   LCD_PrHexByte   
- 0164                           
- 0164 5000                      mov    A,00
- 0166 5705                      mov    X,05
- 0168 9000                      call   LCD_Position
- 016A 5019                      mov    A,>COLON1
- 016C 5719                      mov    X,<COLON1
- 016E 9000                      call   LCD_PrCString   
- 0170                           
- 0170 5000                      mov    A,00
- 0172 5706                      mov    X,06
- 0174 9000                      call   LCD_Position
- 0176 5111                      mov    A,[seconds]
- 0178 9000                      call   LCD_PrHexByte   
- 017A                           
- 017A 5000                      mov    A,00
- 017C 570A                      mov    X,10
- 017E 9000                      call   LCD_Position
- 0180 5019                      mov    A,>COLON1
- 0182 5719                      mov    X,<COLON1
- 0184 9000                      call   LCD_PrCString   
- 0186                           
- 0186 5000                      mov    A,00
- 0188 570B                      mov    X,11
- 018A 9000                      call   LCD_Position
- 018C 5110                      mov    A,[milisec]
- 018E 9000                      call   LCD_PrHexByte 
- 0190 8EA1              jmp _check
- 0192           
- 0192           _goToNextState:
- 0192           	;call _clearStateTimerVar
- 0192 5000                      mov A , 0x00
- 0194 08                        push A
- 0195 5000                      mov A , 0x00
- 0197 08                        push A
- 0198 50C3                      mov A , 0xC3
- 019A 08                        push A
- 019B 504F                      mov A , 0x4F
- 019D 08                        push A
- 019E 7C0000                    lcall stateTimer_WritePeriod
- 01A1 552200                    mov [stateTimerMilisec] , 0x00
- 01A4 552300                    mov [stateTimerSeconds] , 0x00
- 01A7 552400                    mov [stateTimerMinutes] , 0x00
- 01AA 552500                    mov [stateTimerHour] ,0x00
- 01AD 70F9              and F , clearFlagMsk
- 01AF 3C2701            cmp [SWFlag] , 0x01
- 01B2 AE7F              jz _check
- 01B4 70F9              and F , clearFlagMsk
- 01B6 3C2804            cmp [currentState] , 0x04
- 01B9 A018              jz _setSensitivity
- 01BB 70F9              and F , clearFlagMsk
- 01BD 3C2800            cmp [currentState] , 0x00
- 01C0 A024              jz _setAccuracy
- 01C2 70F9              and F , clearFlagMsk
- 01C4 3C2801            cmp [currentState] , 0x01
- 01C7 A03D              jz _soundSW
- 01C9 70F9              and F , clearFlagMsk
- 01CB 3C2802            cmp [currentState] , 0x02
- 01CE A049              jz _pushBtnSW
- 01D0 D05A              jnc _displayMemory
- 01D2                   
- 01D2           _setSensitivity:
- 01D2 552800            mov [currentState] , 0x00
- 01D5 9000              call LCD_Start
- 01D7 5000              mov    A,00
- 01D9 5700              mov    X,00
- 01DB 9000              call   LCD_Position
- 01DD 50E7              mov    A,>Microphone
- 01DF 57E7              mov    X,<Microphone
- 01E1 9000              call   LCD_PrCString  
- 01E3 8E4E              jmp _check
- 01E5                   
- 01E5           _setAccuracy:
- 01E5 552801            mov [currentState] , 0x01
- 01E8 9000              call LCD_Start
- 01EA 5000              mov    A,00
- 01EC 5700              mov    X,00
- 01EE 9000              call   LCD_Position
- 01F0 50F2              mov    A,>Accuracy
- 01F2 57F2              mov    X,<Accuracy
- 01F4 9000              call   LCD_PrCString  
- 01F6 552100            mov [accuracyItr] , 0x00
- 01F9 5001              mov    A,01           ; Set cursor position at row = 0
- 01FB 5700              mov    X,00           ; col = 5
- 01FD 9000              call   LCD_Position
- 01FF 5010              mov    A,0x10      ; Load pointer to ROM string
- 0201 9000              call   LCD_PrHexByte
- 0203 8E2E              jmp _check
- 0205                   
- 0205           _soundSW:
- 0205 552802            mov [currentState] , 0x02
- 0208 9000              call LCD_Start
- 020A 5000              mov    A,00
- 020C 5700              mov    X,00
- 020E 9000              call   LCD_Position
- 0210 5000              mov    A,>Sound
- 0212 5700              mov    X,<Sound
- 0214 9000              call   LCD_PrCString  
- 0216 8E1B              jmp _check
- 0218                   
- 0218           _pushBtnSW:
- 0218 552803            mov [currentState] , 0x03
- 021B 9000              call LCD_Start
- 021D 5000              mov    A,00
- 021F 5700              mov    X,00
- 0221 9000              call   LCD_Position
- 0223 5006              mov    A,>PushBtn
- 0225 5706              mov    X,<PushBtn
- 0227 9000              call   LCD_PrCString  
- 0229 8E08              jmp _check
- 022B                   
- 022B           _displayMemory:
- 022B 552804            mov [currentState] , 0x04
- 022E 9000              call LCD_Start
- 0230 5000              mov    A,00
- 0232 5700              mov    X,00
- 0234 9000              call   LCD_Position
- 0236 5012              mov    A,>Memory
- 0238 5712              mov    X,<Memory
- 023A 9000              call   LCD_PrCString  
- 023C 8DF5              jmp _check
- 023E           
- 023E           _printHigh: 
- 023E 5000              mov    A,00           ; Set cursor position at row = 0
- 0240 5702              mov    X,02           ; col = 5
- 0242 9000              call   LCD_Position
- 0244 50DE              mov    A,>highStr      ; Load pointer to ROM string
- 0246 57DE              mov    X,<highStr; Load pointer to ROM strin
- 0248 9000              call   LCD_PrCString
- 024A 552200            mov [stateTimerMilisec] , 0x00
- 024D 552300            mov [stateTimerSeconds] , 0x00
- 0250 552400            mov [stateTimerMinutes] , 0x00
- 0253 552500            mov [stateTimerHour] ,0x00
- 0256 552605            mov [stateTimerAccuracy] , 0x05
- 0259 8DD8              jmp _check
- 025B                   
- 025B           _printLow:
- 025B 5001              mov    A,01           ; Set cursor position at row = 0
- 025D 5702              mov    X,02           ; col = 5
- 025F 9000              call   LCD_Position
- 0261 50E3              mov    A,>lowStr      ; Load pointer to ROM string
- 0263 57E3              mov    X,<lowStr; Load pointer to ROM strin
- 0265 9000              call   LCD_PrCString
- 0267 552200            mov [stateTimerMilisec] , 0x00
- 026A 552300            mov [stateTimerSeconds] , 0x00
- 026D 552400            mov [stateTimerMinutes] , 0x00
- 0270 552500            mov [stateTimerHour] ,0x00
- 0273 552605            mov [stateTimerAccuracy] , 0x05
- 0276 8DBB              jmp _check
- 0278                   
- 0278           _goToNextAccuracy:
- 0278 3C2100            cmp [accuracyItr] , 0x00
- 027B A008              jz _accuracyState1
- 027D 3C2105            cmp [accuracyItr] , 0x05
- 0280 A021              jz _accuracyState2
- 0282 803D              jmp _accuracyState3
- 0284                   
- 0284           _accuracyState1:
- 0284 552105            mov [accuracyItr] , 0x05
- 0287 5000              mov A , 0x00
- 0289 08                push A
- 028A 5000              mov A , 0x00
- 028C 08                push A
- 028D 50C3              mov A , 0xC3
- 028F 08                push A
- 0290 504F              mov A , 0x4F
- 0292 08                push A
- 0293 7C0000            lcall SW_WritePeriod
- 0296 5001              mov    A,01           ; Set cursor position at row = 0
- 0298 5700              mov    X,00           ; col = 5
- 029A 9000              call   LCD_Position
- 029C 5121              mov    A,[accuracyItr]      ; Load pointer to ROM string
- 029E 9000              call   LCD_PrHexByte
- 02A0 8D91              jmp _check
- 02A2           
- 02A2           _accuracyState2:
- 02A2 552101            mov [accuracyItr] , 0x01
- 02A5 5000              mov A , 0x00
- 02A7 08                push A
- 02A8 5000              mov A , 0x00
- 02AA 08                push A
- 02AB 5027              mov A , 0x27
- 02AD 08                push A
- 02AE 500F              mov A , 0x0F
- 02B0 08                push A
- 02B1 7C0000            lcall SW_WritePeriod
- 02B4 5001              mov    A,01           ; Set cursor position at row = 0
- 02B6 5700              mov    X,00           ; col = 5
- 02B8 9000              call   LCD_Position
- 02BA 5121              mov    A,[accuracyItr]      ; Load pointer to ROM string
- 02BC 9000              call   LCD_PrHexByte
- 02BE 8D73              jmp _check
- 02C0                   
- 02C0           _accuracyState3:
- 02C0 552100            mov [accuracyItr] , 0x00
- 02C3 5000              mov A , 0x00
- 02C5 08                push A
- 02C6 5001              mov A , 0x01
- 02C8 08                push A
- 02C9 5086              mov A , 0x86
- 02CB 08                push A
- 02CC 509F              mov A , 0x9F
- 02CE 08                push A
- 02CF 7C0000            lcall SW_WritePeriod
- 02D2 5001              mov    A,01           ; Set cursor position at row = 0
- 02D4 5700              mov    X,00           ; col = 5
- 02D6 9000              call   LCD_Position
- 02D8 5010              mov    A,0x10      ; Load pointer to ROM string
- 02DA 9000              call   LCD_PrHexByte
- 02DC 8D55              jmp _check
- 02DE           
- 02DE           .LITERAL
- 02DE           	highStr:
- 02DE 48494748                  ds  "HIGH"
- 02E2 00                        db  00h                   ; String should always be null terminated             
- 02E3           .ENDLITERAL
- 02E3           
- 02E3           .LITERAL
- 02E3           	lowStr:
- 02E3 4C4F57                    ds  "LOW"
- 02E6 00                        db  00h                   ; String should always be null terminated             
- 02E7           .ENDLITERAL
- 02E7           
- 02E7           .LITERAL
- 02E7           	Microphone:
- 02E7 4D6963726F70686F6E65              ds  "Microphone"
- 02F1 00                        db  00h
- 02F2           .ENDLITERAL
- 02F2           
- 02F2           .LITERAL
- 02F2           	Accuracy:
- 02F2 4163637572616379204D6F6465                ds  "Accuracy Mode"
- 02FF 00                        db  00h
- 0300           .ENDLITERAL
- 0300           
- 0300           .LITERAL
- 0300           	Sound:
- 0300 536F756E64                ds  "Sound"
- 0305 00                        db  00h
- 0306           .ENDLITERAL
- 0306           
- 0306           .LITERAL
- 0306           	PushBtn:
- 0306 5075736820427574746F6E            ds  "Push Button"
- 0311 00                        db  00h
- 0312           .ENDLITERAL
- 0312           
- 0312           .LITERAL
- 0312           	Memory:
- 0312 4D656D6F7279              ds  "Memory"
- 0318 00                        db  00h
- 0319           .ENDLITERAL
- 0319           
- 0319           .LITERAL
- 0319           	COLON1:
- 0319 3A                        ds  ":"
- 031A 00                        db  00h
- 031B           .ENDLITERAL
- 031B           
- 031B           .terminate:
- 031B 8FFF          jmp .terminate
+                Export _clearStateTimerVar
+                Export _clearSWVar
+                Export _stopStateTimer
+                Export _printSWInit
+                
+ 0000           .SECTION 
+ 0000           	_clearStateTimerVar:
+ 0000 5000                      mov A , 0x00
+ 0002 08                        push A
+ 0003 5000                      mov A , 0x00
+ 0005 08                        push A
+ 0006 50C3                      mov A , 0xC3
+ 0008 08                        push A
+ 0009 504F                      mov A , 0x4F
+ 000B 08                        push A
+ 000C 7C0000                    lcall stateTimer_WritePeriod
+ 000F 552200                    mov [stateTimerMilisec] , 0x00
+ 0012 552300                    mov [stateTimerSeconds] , 0x00
+ 0015 552400                    mov [stateTimerMinutes] , 0x00
+ 0018 552500                    mov [stateTimerHour] ,0x00
+ 001B 7F                        ret
+ 001C           .ENDSECTION 
+ 001C           	
+ 001C           .SECTION 
+ 001C           	_clearSWVar:
+ 001C 5000                      mov A , 0x00
+ 001E 08                        push A
+ 001F 5001                      mov A , 0x01
+ 0021 08                        push A
+ 0022 5086                      mov A , 0x86
+ 0024 08                        push A
+ 0025 509F                      mov A , 0x9F
+ 0027 08                        push A
+ 0028 7C0000                    lcall SW_WritePeriod
+ 002B 551000                    mov [milisec] , 0x00
+ 002E 551100                    mov [seconds] , 0x00
+ 0031 551200                    mov [minutes] , 0x00
+ 0034 551300                    mov [hour] ,0x00
+ 0037 7F                        ret
+ 0038           .ENDSECTION 
+ 0038           	
+ 0038           .SECTION        
+ 0038           	_stopStateTimer: 
+ 0038 9000                      call stateTimer_Stop
+ 003A 9000                      call stateTimer_DisableInt
+ 003C 551400                    mov [stateTimerFlag] , 0x00
+ 003F 7F                        ret
+ 0040           .ENDSECTION 
+ 0040           	
+ 0040           .SECTION
+ 0040           	_printSWInit:
+ 0040 9000                      call LCD_Start
+ 0042 5000                      mov    A,00
+ 0044 5700                      mov    X,00
+ 0046 9000                      call   LCD_Position
+ 0048 5113                      mov    A,[hour]
+ 004A 9000                      call   LCD_PrHexByte   
+ 004C                           
+ 004C 5000                      mov    A,00
+ 004E 5702                      mov    X,02
+ 0050 9000                      call   LCD_Position
+ 0052 5094                      mov    A,>COLON2
+ 0054 5794                      mov    X,<COLON2
+ 0056 9000                      call   LCD_PrCString
+ 0058                           
+ 0058 5000                      mov    A,00
+ 005A 5703                      mov    X,03
+ 005C 9000                      call   LCD_Position
+ 005E 5112                      mov    A,[minutes]
+ 0060 9000                      call   LCD_PrHexByte   
+ 0062                           
+ 0062 5000                      mov    A,00
+ 0064 5705                      mov    X,05
+ 0066 9000                      call   LCD_Position
+ 0068 5094                      mov    A,>COLON2
+ 006A 5794                      mov    X,<COLON2
+ 006C 9000                      call   LCD_PrCString   
+ 006E                           
+ 006E 5000                      mov    A,00
+ 0070 5706                      mov    X,06
+ 0072 9000                      call   LCD_Position
+ 0074 5111                      mov    A,[seconds]
+ 0076 9000                      call   LCD_PrHexByte   
+ 0078                           
+ 0078 5000                      mov    A,00
+ 007A 570A                      mov    X,10
+ 007C 9000                      call   LCD_Position
+ 007E 5094                      mov    A,>COLON2
+ 0080 5794                      mov    X,<COLON2
+ 0082 9000                      call   LCD_PrCString   
+ 0084                           
+ 0084 5000                      mov    A,00
+ 0086 570B                      mov    X,11
+ 0088 9000                      call   LCD_Position
+ 008A 5110                      mov    A,[milisec]
+ 008C 9000                      call   LCD_PrHexByte  
+ 008E 7F                        ret
+ 008F           .ENDSECTION 
+ 008F           
+ 008F           .LITERAL
+ 008F           	highStr1:
+ 008F 48494748                  ds  "HIGH"
+ 0093 00                        db  00h                   ; String should always be null terminated             
+ 0094           .ENDLITERAL
+ 0094           
+ 0094           .LITERAL
+ 0094           	COLON2:
+ 0094 3A                        ds  ":"
+ 0095 00                        db  00h
+ 0096           .ENDLITERAL

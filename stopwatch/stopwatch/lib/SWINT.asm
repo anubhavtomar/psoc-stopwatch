@@ -40,7 +40,8 @@ milisec: equ 0x10
 seconds: equ 0x11
 minutes: equ 0x12
 hour: equ 0x13
-accuracy: equ 0x20
+accuracyItr: equ 0x21
+clearFlagMsk: equ 249
 
 ;------------------------
 ; Variable Allocation
@@ -75,67 +76,75 @@ _SW_ISR:
    ;---------------------------------------------------
    ; Insert your custom assembly code above this banner
    ;---------------------------------------------------
-   	mov A , [accuracy]
-	cmp A , 0x01
+   	mov A , [accuracyItr]
+	and F , [clearFlagMsk]
+	cmp A , 0x00
 	jz _count_sec
+	and F , [clearFlagMsk]
+	cmp A , 0x05
+	jz _millifive
 	inc [milisec]
-	cmp [milisec], 0x20
-	jc end_timeLoop ; jump if seconds < 60
-	mov [milisec], 0x00
+	jmp _compareCornerMilis
+_millifive:
+	add [milisec] , 0x05
+_compareCornerMilis:
+	cmp [milisec] , 0x0A
+	jc end_timeLoop
+	mov [milisec] , 0x00
 _count_sec:	
 	inc [seconds]
-	cmp [seconds], 0x3c
-	jc end_timeLoop ; jump if seconds < 60
-	mov [seconds], 0x00
+	cmp [seconds] , 0x3c
+	jc end_timeLoop
+	mov [seconds] , 0x00
 	inc [minutes]
-	cmp [minutes], 0x3c
-	jc end_timeLoop ; jump if minutes < 60
-	mov [minutes], 0x00
+	cmp [minutes] , 0x3c
+	jc end_timeLoop
+	mov [minutes] , 0x00
 	inc [hour]
 end_timeLoop:
-	mov    A,00
-	mov    X,00
+	mov    A , 00
+	mov    X , 00
    	call   LCD_Position
-   	mov    A,[hour]
+   	mov    A , [hour]
    	call   LCD_PrHexByte   
 	
-	mov    A,00
-	mov    X,02
+	mov    A , 00
+	mov    X , 02
    	call   LCD_Position
-	mov    A,>COLON
-   	mov    X,<COLON
+	mov    A , >COLON
+   	mov    X , <COLON
    	call   LCD_PrCString
 	
-	mov    A,00
-	mov    X,03
+	mov    A , 00
+	mov    X , 03
    	call   LCD_Position
-   	mov    A,[minutes]
+   	mov    A , [minutes]
    	call   LCD_PrHexByte   
 	
-	mov    A,00
-	mov    X,05
+	mov    A , 00
+	mov    X , 05
    	call   LCD_Position
-	mov    A,>COLON
-   	mov    X,<COLON
+	mov    A , >COLON
+   	mov    X , <COLON
    	call   LCD_PrCString   
 	
-	mov    A,00
-	mov    X,06
+	mov    A , 00
+	mov    X , 06
    	call   LCD_Position
-   	mov    A,[seconds]
+   	mov    A , [seconds]
    	call   LCD_PrHexByte   
 	
-	mov    A,00
-	mov    X,10
+	mov    A , 00
+	mov    X , 10
    	call   LCD_Position
-	mov    A,>COLON
-   	mov    X,<COLON
+	mov    A , >COLON
+   	mov    X , <COLON
    	call   LCD_PrCString   
 	
-	mov    A,00
-	mov    X,11
+	mov    A , 00
+	mov    X , 11
    	call   LCD_Position
-	mov    A,[milisec]
+	mov    A , [milisec]
    	call   LCD_PrHexByte    
 	
 .LITERAL
