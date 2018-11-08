@@ -77,10 +77,10 @@ _SW_ISR:
    ; Insert your custom assembly code above this banner
    ;---------------------------------------------------
    	mov A , [accuracyItr]
-	and F , [clearFlagMsk]
+	and F , clearFlagMsk
 	cmp A , 0x00
 	jz _count_sec
-	and F , [clearFlagMsk]
+	and F , clearFlagMsk
 	cmp A , 0x05
 	jz _millifive
 	inc [milisec]

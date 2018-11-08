@@ -1983,6 +1983,7 @@
  0012           minutes: equ 0x12
  0013           hour: equ 0x13
  0021           accuracyItr: equ 0x21
+ 00F9           clearFlagMsk: equ 249
  0000           
  0000           ;------------------------
  0000           ; Variable Allocation
@@ -2018,95 +2019,97 @@
  0000              ; Insert your custom assembly code above this banner
  0000              ;---------------------------------------------------
  0000 5121              mov A , [accuracyItr]
- 0002 3900              cmp A , 0x00
- 0004 A014              jz _count_sec
- 0006 3905              cmp A, 0x05
- 0008 A005              jz _millifive
- 000A 7610              inc [milisec]
- 000C 8004              jmp _compareCornerMilis
- 000E           _millifive:
- 000E 061005            add [milisec],0x05
- 0011           _compareCornerMilis:
- 0011 3C100A            cmp [milisec], 0x0A
- 0014 C01A              jc end_timeLoop ; jump if seconds < 60
- 0016 551000            mov [milisec], 0x00
- 0019           _count_sec:	
- 0019 7611              inc [seconds]
- 001B 3C113C            cmp [seconds], 0x3c
- 001E C010              jc end_timeLoop ; jump if seconds < 60
- 0020 551100            mov [seconds], 0x00
- 0023 7612              inc [minutes]
- 0025 3C123C            cmp [minutes], 0x3c
- 0028 C006              jc end_timeLoop ; jump if minutes < 60
- 002A 551200            mov [minutes], 0x00
- 002D 7613              inc [hour]
- 002F           end_timeLoop:
- 002F 5000              mov    A,00
- 0031 5700              mov    X,00
- 0033 9000              call   LCD_Position
- 0035 5113              mov    A,[hour]
- 0037 9000              call   LCD_PrHexByte   
- 0039                   
- 0039 5000              mov    A,00
- 003B 5702              mov    X,02
- 003D 9000              call   LCD_Position
- 003F 507B              mov    A,>COLON
- 0041 577B              mov    X,<COLON
- 0043 9000              call   LCD_PrCString
- 0045                   
- 0045 5000              mov    A,00
- 0047 5703              mov    X,03
- 0049 9000              call   LCD_Position
- 004B 5112              mov    A,[minutes]
- 004D 9000              call   LCD_PrHexByte   
- 004F                   
- 004F 5000              mov    A,00
- 0051 5705              mov    X,05
- 0053 9000              call   LCD_Position
- 0055 507B              mov    A,>COLON
- 0057 577B              mov    X,<COLON
- 0059 9000              call   LCD_PrCString   
- 005B                   
- 005B 5000              mov    A,00
- 005D 5706              mov    X,06
- 005F 9000              call   LCD_Position
- 0061 5111              mov    A,[seconds]
- 0063 9000              call   LCD_PrHexByte   
- 0065                   
- 0065 5000              mov    A,00
- 0067 570A              mov    X,10
- 0069 9000              call   LCD_Position
- 006B 507B              mov    A,>COLON
- 006D 577B              mov    X,<COLON
- 006F 9000              call   LCD_PrCString   
- 0071                   
- 0071 5000              mov    A,00
- 0073 570B              mov    X,11
- 0075 9000              call   LCD_Position
- 0077 5110              mov    A,[milisec]
- 0079 9000              call   LCD_PrHexByte    
- 007B                   
- 007B           .LITERAL
- 007B           	COLON:
- 007B 3A                        ds  ":"
- 007C 00                        db  00h
- 007D           .ENDLITERAL
- 007D              ;---------------------------------------------------
- 007D              ; Insert a lcall to a C function below this banner
- 007D              ; and un-comment the lines between these banners
- 007D              ;---------------------------------------------------
- 007D              
- 007D              ;PRESERVE_CPU_CONTEXT
- 007D              ;lcall _My_C_Function
- 007D              ;RESTORE_CPU_CONTEXT
- 007D              
- 007D              ;---------------------------------------------------
- 007D              ; Insert a lcall to a C function above this banner
- 007D              ; and un-comment the lines between these banners
- 007D              ;---------------------------------------------------
- 007D              ;@PSoC_UserCode_END@ (Do not change this line.)
- 007D           
- 007D 7E           reti
- 007E           
- 007E           
- 007E           ; end of file SWINT.asm
+ 0002 70F9              and F , clearFlagMsk
+ 0004 3900              cmp A , 0x00
+ 0006 A016              jz _count_sec
+ 0008 70F9              and F , clearFlagMsk
+ 000A 3905              cmp A , 0x05
+ 000C A005              jz _millifive
+ 000E 7610              inc [milisec]
+ 0010 8004              jmp _compareCornerMilis
+ 0012           _millifive:
+ 0012 061005            add [milisec] , 0x05
+ 0015           _compareCornerMilis:
+ 0015 3C100A            cmp [milisec] , 0x0A
+ 0018 C01A              jc end_timeLoop
+ 001A 551000            mov [milisec] , 0x00
+ 001D           _count_sec:	
+ 001D 7611              inc [seconds]
+ 001F 3C113C            cmp [seconds] , 0x3c
+ 0022 C010              jc end_timeLoop
+ 0024 551100            mov [seconds] , 0x00
+ 0027 7612              inc [minutes]
+ 0029 3C123C            cmp [minutes] , 0x3c
+ 002C C006              jc end_timeLoop
+ 002E 551200            mov [minutes] , 0x00
+ 0031 7613              inc [hour]
+ 0033           end_timeLoop:
+ 0033 5000              mov    A , 00
+ 0035 5700              mov    X , 00
+ 0037 9000              call   LCD_Position
+ 0039 5113              mov    A , [hour]
+ 003B 9000              call   LCD_PrHexByte   
+ 003D                   
+ 003D 5000              mov    A , 00
+ 003F 5702              mov    X , 02
+ 0041 9000              call   LCD_Position
+ 0043 507F              mov    A , >COLON
+ 0045 577F              mov    X , <COLON
+ 0047 9000              call   LCD_PrCString
+ 0049                   
+ 0049 5000              mov    A , 00
+ 004B 5703              mov    X , 03
+ 004D 9000              call   LCD_Position
+ 004F 5112              mov    A , [minutes]
+ 0051 9000              call   LCD_PrHexByte   
+ 0053                   
+ 0053 5000              mov    A , 00
+ 0055 5705              mov    X , 05
+ 0057 9000              call   LCD_Position
+ 0059 507F              mov    A , >COLON
+ 005B 577F              mov    X , <COLON
+ 005D 9000              call   LCD_PrCString   
+ 005F                   
+ 005F 5000              mov    A , 00
+ 0061 5706              mov    X , 06
+ 0063 9000              call   LCD_Position
+ 0065 5111              mov    A , [seconds]
+ 0067 9000              call   LCD_PrHexByte   
+ 0069                   
+ 0069 5000              mov    A , 00
+ 006B 570A              mov    X , 10
+ 006D 9000              call   LCD_Position
+ 006F 507F              mov    A , >COLON
+ 0071 577F              mov    X , <COLON
+ 0073 9000              call   LCD_PrCString   
+ 0075                   
+ 0075 5000              mov    A , 00
+ 0077 570B              mov    X , 11
+ 0079 9000              call   LCD_Position
+ 007B 5110              mov    A , [milisec]
+ 007D 9000              call   LCD_PrHexByte    
+ 007F                   
+ 007F           .LITERAL
+ 007F           	COLON:
+ 007F 3A                        ds  ":"
+ 0080 00                        db  00h
+ 0081           .ENDLITERAL
+ 0081              ;---------------------------------------------------
+ 0081              ; Insert a lcall to a C function below this banner
+ 0081              ; and un-comment the lines between these banners
+ 0081              ;---------------------------------------------------
+ 0081              
+ 0081              ;PRESERVE_CPU_CONTEXT
+ 0081              ;lcall _My_C_Function
+ 0081              ;RESTORE_CPU_CONTEXT
+ 0081              
+ 0081              ;---------------------------------------------------
+ 0081              ; Insert a lcall to a C function above this banner
+ 0081              ; and un-comment the lines between these banners
+ 0081              ;---------------------------------------------------
+ 0081              ;@PSoC_UserCode_END@ (Do not change this line.)
+ 0081           
+ 0081 7E           reti
+ 0082           
+ 0082           
+ 0082           ; end of file SWINT.asm
