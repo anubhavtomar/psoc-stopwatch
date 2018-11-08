@@ -83,6 +83,7 @@ _checkLongPress:
 	call stateTimer_Stop
 	call stateTimer_DisableInt
 	mov [stateTimerFlag] , 0x00
+	and F , clearFlagMsk
 	cmp [stateTimerSeconds] , 0x01
 	jnc _goToNextState
 	jmp _checkShortPressState
@@ -128,13 +129,13 @@ _SWstop:
 	call SW_Stop
 	call SW_DisableInt
 	;call _clearSWVar
-	and F,[clearFlagMsk]
+	and F,clearFlagMsk
 	cmp [accuracyItr],0x00
 	jz _compAccuracy1
-	and F,[clearFlagMsk]
+	and F,clearFlagMsk
 	cmp [accuracyItr],0x05
 	jz _compAccuracy5
-	and F,[clearFlagMsk]
+	and F,clearFlagMsk
 	jmp _compAccuracy01
 	
 _compAccuracy1:
